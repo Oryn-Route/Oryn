@@ -1,99 +1,69 @@
-# Rust
-/target/
-**/*.rs.bk
-Cargo.lock
-*.pdb
+# Test fixtures and generated JSON files
+*_test*.json
+test_*.json
+fuzz_*.json
+e2e_*.json
+val_*.json
+property_*.json
+regression_*.json
+stress_test_*.json
+*_benchmark*.json
+gas_baselines.json
+perf-baseline.json
+perf-budget.json
+health-response.json
+error-response.json
+orderbook-response.json
+pairs-response.json
+quote-response.json
+routes-response.json
+graph_fixture.json
+minimal_market.json
+risk-limits.json
+indexer-lag-dashboard.json
+slo-dashboard.json
+swap-indexer-panels.json
+testnet.json
+pools-mainnet.json
+pools-testnet.json
+tokens-mainnet.json
+tokens-testnet.json
+networks.json
+system-messages.json
+openapi.json
 
-# Local cargo network tuning (optional; copy from a teammate or tune for your link)
-.cargo/config.toml
+# Build artifacts
+tsconfig.tsbuildinfo
+package-lock.json
+*.tsbuildinfo
 
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-.DS_Store
+# Binary/assets
+*.png
+*.svg
+*.ico
+*.b64
+*.hex
+*.xdr.b64
+*.attestation.hex
+*.message.hex
 
-# Environment
-.env
-.env.local
-.env.*.local
-.env.prod
-.env.production
-.env.staging
+# Terraform
+*.tfvars
+*.tfvars.example
+!terraform.tfvars.example
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
-
-# Logs
-*.log
-logs/
-
-# Docker
-docker-compose.override.yml
-
-# OS
+# IDE/OS
+.opencode-session-bundle.zip
 .DS_Store
 Thumbs.db
 
-# Build artifacts
-dist/
-build/
-*.wasm
-*.wasm.gz
-.next/
-*.bak
-*.bak.json
+# Logs
+*.log
 
-# Node
-node_modules/
-.npm/
-frontend/node_modules/
-frontend/.next/
-sdk-js/node_modules/
-
-# Test coverage
-tarpaulin-report.html
+# Coverage
 coverage/
+.nyc_output/
 
-# Deployment artifacts (generated at runtime, may contain local build paths).
-# The reviewable, non-secret artifacts in config/deployments/ are tracked on
-# purpose — see config/deployments/README.md.
-config/deployment-*.json
-logs/
-
-# Soroban identities and secret keys
-.soroban/
-*.secret-key
-identity.toml
-
-# Local smoke / readiness evidence (never commit secrets or run artifacts)
-tmp/
-tmp/**
-
-# Local development
-.local/
-requirements.md
-task_plan.md
-findings.md
-progress.md
-GEMINI.md
-.claude/
-.claude/skills/
-.claude/skills/planning-with-files/
-.claude/skills/planning-with-files/scripts/
-.claude/skills/planning-with-files/scripts/init-session.sh
-.claude/skills/planning-with-files/scripts/init-session.sh
-
-GITHUB_ISSUES.md
-
-.agent/
-.agents/
-
-issue.md
-commit.md
-skills-lock.json
-.worktrees/
+# Temp
+*.tmp
+*.temp
