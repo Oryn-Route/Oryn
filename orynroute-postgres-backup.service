@@ -1,9 +1,0 @@
-[Unit]
-Description=OrynRoute Postgres backup
-After=docker.service orynroute-staging.service
-Requires=docker.service
-
-[Service]
-Type=oneshot
-WorkingDirectory=/opt/orynroute
-ExecStart=/bin/bash /opt/orynroute/deploy/aws/scripts/postgres-backup.sh
