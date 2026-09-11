@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-03-26T00:00:00Z",
+  "commit": "baseline",
+  "benchmarks": {
+    "pathfind_fixture": {
+      "p50_ns": 45000,
+      "p95_ns": 68000
+    },
+    "pathfind_4hop_realistic": {
+      "p50_ns": 32000,
+      "p95_ns": 45000
+    }
+  }
+}

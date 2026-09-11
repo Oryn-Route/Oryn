@@ -1,0 +1,99 @@
+# Rust
+/target/
+**/*.rs.bk
+Cargo.lock
+*.pdb
+
+# Local cargo network tuning (optional; copy from a teammate or tune for your link)
+.cargo/config.toml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*.local
+.env.prod
+.env.production
+.env.staging
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# Docker
+docker-compose.override.yml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist/
+build/
+*.wasm
+*.wasm.gz
+.next/
+*.bak
+*.bak.json
+
+# Node
+node_modules/
+.npm/
+frontend/node_modules/
+frontend/.next/
+sdk-js/node_modules/
+
+# Test coverage
+tarpaulin-report.html
+coverage/
+
+# Deployment artifacts (generated at runtime, may contain local build paths).
+# The reviewable, non-secret artifacts in config/deployments/ are tracked on
+# purpose — see config/deployments/README.md.
+config/deployment-*.json
+logs/
+
+# Soroban identities and secret keys
+.soroban/
+*.secret-key
+identity.toml
+
+# Local smoke / readiness evidence (never commit secrets or run artifacts)
+tmp/
+tmp/**
+
+# Local development
+.local/
+requirements.md
+task_plan.md
+findings.md
+progress.md
+GEMINI.md
+.claude/
+.claude/skills/
+.claude/skills/planning-with-files/
+.claude/skills/planning-with-files/scripts/
+.claude/skills/planning-with-files/scripts/init-session.sh
+.claude/skills/planning-with-files/scripts/init-session.sh
+
+GITHUB_ISSUES.md
+
+.agent/
+.agents/
+
+issue.md
+commit.md
+skills-lock.json
+.worktrees/

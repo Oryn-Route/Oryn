@@ -1,0 +1,15 @@
+# cargo-audit configuration
+# Ignores unmaintained crate advisories that are transitive dependencies
+# we cannot directly control. Do not add ignores for fixable vulnerabilities.
+
+[advisories]
+ignore = [
+    # rsa: Marvin Attack timing sidechannel - no fix available, transitive dep
+    # of sqlx-mysql (not used; project only uses postgres feature)
+    "RUSTSEC-2023-0071",
+    # Unmaintained transitive dependencies we cannot directly control
+    "RUSTSEC-2024-0436",  # paste (soroban)
+    "RUSTSEC-2024-0370",  # proc-macro-error (utoipa)
+    "RUSTSEC-2025-0134",  # rustls-pemfile (reqwest)
+    "RUSTSEC-2024-0320",  # yaml-rust (config)
+]

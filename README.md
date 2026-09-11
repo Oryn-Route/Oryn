@@ -1,0 +1,553 @@
+# OrynRoute
+
+**Non-custodial cross-chain execution aggregator centered on Stellar — best-price routing across SDEX and Soroban AMM, with a foundation for bridging to Ethereum, Solana, Bitcoin, and TRON.**
+
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Rust](https://img.shields.io/badge/rust-1.75%2B-orange.svg)](https://www.rust-lang.org)
+[![Soroban](https://img.shields.io/badge/soroban-enabled-purple.svg)](https://soroban.stellar.org)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Ladle Stories](https://img.shields.io/badge/stories-ladle-purple.svg)](frontend/STORYBOOK.md)
+
+<details>
+<summary><b>Table of Contents</b></summary>
+
+- [Overview](#-overview)
+- [The Problem We're Solving](#-the-problem-were-solving)
+- [Key Features](#-key-features)
+  - [Core Capabilities](#-core-capabilities)
+  - [For Traders](#-for-traders)
+  - [For Developers](#-for-developers)
+- [Architecture](#-architecture)
+  - [High-Level Overview](#-high-level-overview)
+  - [Core Components](#-core-components)
+- [Technology Stack](#-technology-stack)
+- [Current Status & Contribution Opportunities](#-current-status--contribution-opportunities)
+- [Getting Started](#-getting-started)
+- [Project Structure](#-project-structure)
+- [Development Roadmap](#-development-roadmap)
+- [Contributing](#-contributing)
+- [Security & Audits](#-security--audits)
+- [License](#-license)
+- [Resources](#-resources)
+- [Support & Community](#-support--community)
+- [Recognition](#-recognition)
+- [Vision](#-vision)
+- [Get Involved](#-get-involved)
+
+</details>
+
+> **🌟 Actively seeking contributors!** We're building critical infrastructure for the Stellar ecosystem and need help from developers of all skill levels. Check out our [open issues](../../issues) to get started.
+
+---
+
+## 🚀 Overview
+
+OrynRoute is a **non-custodial cross-chain execution aggregator centered on Stellar**. Users keep custody of their keys and assets; OrynRoute orchestrates quotes, routing, and swap execution without taking possession of funds.
+
+On Stellar, it provides unified price discovery and optimal routing across SDEX orderbooks and Soroban AMM pools. Beyond Stellar, the platform is evolving to connect major chains — Ethereum, Solana, Bitcoin, and TRON — through established settlement rails (CCTP, NEAR Intents, anchors) rather than building new bridge protocols.
+
+### The Problem We're Solving
+
+Stellar users and integrators currently face:
+
+- **Fragmented liquidity** between SDEX and Soroban AMM pools
+- **No unified price discovery** across different trading venues
+- **Suboptimal trade execution** due to lack of intelligent routing
+- **Isolated Stellar liquidity** with no first-class path to other major chains
+- **Loss of SDEX Explorer** functionality without a clear replacement
+
+OrynRoute addresses these challenges with open-source infrastructure that benefits traders, developers, and the entire Stellar ecosystem.
+
+### What We're Building
+
+- **Stellar-native DEX aggregation**: Index and aggregate liquidity from SDEX orderbooks and Soroban AMM pools
+- **Live swap execution**: Server-authoritative prepare/submit flow with cryptographic signature verification (classic SDEX today; Soroban gated until audit-ready)
+- **Cross-chain foundation**: CAIP-style chain-aware assets, `/api/v2` seam, wallet adapters for Stellar, EVM, Solana, Bitcoin, and TRON, plus a **signed-live** Circle CCTP Stellar → Sepolia USDC corridor on testnet (public API enablement still gated)
+- **Intelligent routing engine**: Multi-hop pathfinding with health, policy, and kill-switch controls
+- **Smart contracts**: Soroban-based router contracts for secure on-chain swap execution
+- **Developer SDKs**: JavaScript/TypeScript and Rust SDKs for integrations
+- **Web interface**: Modern UI with real-time quotes, wallet integration, and structured error handling
+- **High performance**: Sub-500ms API response times with real-time orderbook synchronization
+
+---
+
+## ✨ Key Features
+
+### Core Capabilities
+
+- ✅ **Non-custodial execution**: Users sign transactions in their own wallets; the API never holds keys or funds
+- ✅ **Best price discovery**: Automatically find the best execution price across all Stellar liquidity sources
+- ✅ **Multi-hop routing**: Support for complex multi-step trades (e.g., XLM → USDC → EURC)
+- ✅ **Cross-chain readiness**: Chain-aware asset model, multi-chain wallet adapters, and v2 API seam for bridge settlement rails
+- ✅ **CCTP testnet proof**: Signed-live Stellar → Sepolia USDC mint ([`0x713cc8b1…bed6`](https://sepolia.etherscan.io/tx/0x713cc8b174d775bf7a3a97f33c53a37f698c93bc66b378dfa55ccfcc7f1cbed6)); public enablement remains operator-gated
+- ✅ **Price impact analysis**: Real-time calculation of price impact and slippage
+- ✅ **Real-time indexing**: Continuous synchronization of SDEX and AMM pool states
+- ✅ **Developer-friendly**: Comprehensive SDKs and APIs for easy integration
+
+### For Traders
+
+- Execute swaps at the best available prices
+- Visualize trade routes and price impact before execution
+- Access deep liquidity across multiple sources
+- Set custom slippage tolerance
+
+### For Developers
+
+- Run component story snapshots with Ladle via frontend/ `npm run storybook:ci`
+
+
+- REST API for price quotes and orderbook data
+- WebSocket support for real-time updates
+- JavaScript/TypeScript SDK for web applications
+- Rust SDK for backend integrations
+- CLI tools for power users
+
+---
+
+## 🏗️ Architecture
+
+OrynRoute is built with a modular architecture consisting of several key components. See our [comprehensive architecture diagrams](docs/architecture/diagrams.md) for detailed visualizations.
+
+### High-Level Overview
+
+```mermaid
+graph TB
+    subgraph "OrynRoute Platform"
+        Indexer[Indexer Service<br/>Syncs SDEX + AMM Data]
+        Router[Routing Engine<br/>Pathfinding]
+        API[API Server<br/>REST + WebSocket]
+        Contracts[Smart Contracts<br/>Soroban]
+    end
+
+    subgraph "Data Layer"
+        DB[(PostgreSQL)]
+        Cache[(Redis)]
+    end
+
+    Stellar[Stellar Network<br/>Horizon + Soroban] --> Indexer
+    Indexer --> DB
+    Router --> DB
+    API --> Cache
+    API --> Router
+    WebUI[Web UI] --> API
+    SDKs[TypeScript/Rust SDKs] --> API
+    Contracts --> Stellar
+
+    style Indexer fill:#e1f5ff
+    style Router fill:#e1f5ff
+    style API fill:#e1f5ff
+    style DB fill:#fff4e1
+    style Cache fill:#ffe1e1
+```
+
+### Core Components
+
+1. **Indexer Service**: Syncs SDEX orderbooks and Soroban AMM pool states from Stellar Horizon API
+2. **Routing Engine**: Pathfinding algorithms for optimal multi-hop route discovery
+3. **API Server**: REST/WebSocket endpoints serving quotes and orderbook data
+4. **Smart Contracts**: Soroban contracts for on-chain swap execution
+5. **Frontend UI**: React-based web interface for traders
+6. **SDKs**: TypeScript and Rust libraries for developers
+
+📊 **[View Detailed Architecture Diagrams →](docs/architecture/diagrams.md)**
+
+---
+
+## 🛠️ Technology Stack
+
+### Backend
+
+- **Language**: Rust (for performance and safety)
+- **Framework**: Axum (API server)
+- **Database**: PostgreSQL (orderbook storage)
+- **Cache**: Redis (hot data caching)
+- **Blockchain**: Soroban (smart contracts)
+
+### Frontend
+
+- **Framework**: React/Next.js
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS + shadcn/ui
+- **State Management**: React hooks + context
+- **Wallet Integration**: Stellar (Freighter, xBull, Albedo, LOBSTR), EVM, Solana, Bitcoin, TRON
+
+### Infrastructure
+
+- **CI/CD**: GitHub Actions
+- **Containerization**: Docker & Docker Compose
+- **Monitoring**: Prometheus/Grafana (planned)
+
+---
+
+## 📊 Current Status & Contribution Opportunities
+
+**Milestone**: M1 - Prototype Indexer & API ✅ **COMPLETE**  
+**Current focus**: Live Stellar testnet swaps, CCTP cross-chain rails (both Sepolia ↔ Stellar directions proven), external Soroban audit  
+**Status**: 🎯 **Stellar classic swap path live** | **CCTP Sepolia ↔ Stellar signed-live on testnet** | **Public CCTP still gated** | **Actively seeking contributors**
+
+### Cross-chain milestone (2026-08-14)
+
+Public testnet USDC mints via Circle CCTP (both directions):
+
+- Stellar → Sepolia mint: [`0x713cc8b174d775bf7a3a97f33c53a37f698c93bc66b378dfa55ccfcc7f1cbed6`](https://sepolia.etherscan.io/tx/0x713cc8b174d775bf7a3a97f33c53a37f698c93bc66b378dfa55ccfcc7f1cbed6) (25 USDC) — [`docs/cctp/signed-live-stellar-to-sepolia.md`](docs/cctp/signed-live-stellar-to-sepolia.md)
+- Sepolia → Stellar burn / mint: [`0x339b96cc…`](https://sepolia.etherscan.io/tx/0x339b96ccb6c3bcc0eb4c37d70fb5b8e6f3ee4c6fd1e7c032e93827faab6a5e73) / [`13d2025d…`](https://stellar.expert/explorer/testnet/tx/13d2025db39b461756954e1266864ea39c126cada55ddf24db9ec364138d16f2) (5 USDC Fast) — [`docs/cctp/signed-live-sepolia-to-stellar.md`](docs/cctp/signed-live-sepolia-to-stellar.md)
+- Staging enablement: [`docs/deployment/cctp-staging-enablement-checklist.md`](docs/deployment/cctp-staging-enablement-checklist.md)
+- Next: staging enablement, then mainnet gates after audit
+
+### Why Contribute to OrynRoute?
+
+- 🎯 **High-impact work**: Building critical Stellar ecosystem infrastructure
+- 📚 **Learn Rust & Soroban**: Gain hands-on experience with cutting-edge blockchain technology
+- 🤝 **Collaborative environment**: Work with experienced Stellar developers
+- 🏆 **Recognition**: Build your portfolio with verifiable open-source contributions
+- 💡 **Clear tasks**: Well-defined issues suitable for all skill levels
+
+### ✅ Recent Progress (Phase 1.2)
+
+**Phase 1.1 Complete:**
+
+- ✅ Rust workspace structure (5 modular crates)
+- ✅ Docker Compose setup for local development
+- ✅ CI/CD pipeline with GitHub Actions
+- ✅ Comprehensive documentation structure
+
+**Phase 1.2 Complete (✅ 100%):**
+
+- ✅ Database schema created (`migrations/0001_init.sql`)
+- ✅ Stellar Horizon API client implemented
+- ✅ Data models for Assets and Offers with validation
+- ✅ Database connection pooling with sqlx
+- ✅ SDEX indexer service with dual modes (polling & streaming)
+- ✅ Main indexer binary created
+- ✅ Retry logic with exponential backoff (3 retries, 100ms-5s)
+- ✅ Real-time streaming support (polling-based, SSE-ready)
+- ✅ Orderbook snapshot endpoint (`/order_book`)
+- ✅ Comprehensive data validation
+
+**Phase 1.3 Complete (✅ 100%):**
+
+- ✅ Performance indexes (11 strategic indexes for common queries)
+- ✅ Data archival system (30-day retention, SQL functions)
+- ✅ Database health monitoring (metrics, pool stats, table sizes)
+- ✅ Query optimizations (materialized views, denormalized views)
+- ✅ HealthMonitor & ArchivalManager Rust modules
+
+**Phase 1.4 Complete (✅ 100%):**
+
+- ✅ Axum-based REST API framework
+- ✅ Core endpoints (pairs, orderbook, quote, health)
+- ✅ Request/response models with validation
+- ✅ Rate limiting middleware (100 req/min)
+- ✅ OpenAPI/Swagger documentation (interactive UI)
+- ✅ CORS support for web clients
+- ✅ Comprehensive error handling
+
+**Phase 1.5 Complete (✅ 100%):**
+
+- ✅ Redis caching layer (optional, graceful fallback)
+- ✅ Smart TTLs: pairs (10s), orderbook (5s), quotes (2s)
+- ✅ Gzip response compression (tower-http)
+- ✅ Cache manager with health checks
+- ✅ Unit tests (5 passing)
+
+**Feature 1 Complete (✅ 100%) — Order Flow Auction (OFA):**
+
+OFA lets a user post an *intent* and have solvers compete off-chain for the
+right to fill it at the best price, reducing MEV and giving users fill-price
+uplift. Fully implemented end-to-end across backend, two on-chain contracts,
+SDK, and frontend:
+
+- ✅ Intent + solver lifecycle: register solver → submit intent → open
+  auction (2–3 s window) → solver quotes → coordinator picks the best fill
+  that clears the user's minimum → settle
+- ✅ API routes (`/api/v2`): `POST /intents`, `GET /intents/{id}`,
+  `POST /intents/{id}/open`, `POST /solvers/register`, `GET /solvers/{id}`,
+  `POST /solvers/{id}/quotes`, `GET /auctions/{intent_id}`,
+  `POST /auctions/{intent_id}/settle`
+- ✅ Solver auth via `x-solver-id` / `x-solver-key` headers (SHA-256 of key
+  stored; no bearer-token fallback)
+- ✅ Off-chain auction coordinator (pure `select_best_quote` winner selection,
+  tie-broken by earliest arrival) with 9 dedicated API error codes
+- ✅ Soroban `SolverRegistry` contract (`crates/contracts/…/solver_registry.rs`,
+  5/5 tests green) + Solana Anchor `solver-registry` program (`solana/solver-registry`)
+- ✅ `sdk-js` OFA client: `createIntent`, `openAuction`, `registerSolver`,
+  `getSolver`, `submitQuote`, `getAuctionStatus`, `settleAuction`,
+  `ofaSolverHeaders()` helper (127/127 tests pass)
+- ✅ Frontend: `frontend/lib/ofa/intent-status.ts` (progress %, livespan
+  helpers with tests), `useIntentAuction` polling hook, OFA client methods
+- ⚙️ Tune the auction window with `OFA_AUCTION_WINDOW_MS` (default 2500 ms,
+  clamped 1000–5000). See `.env.example`.
+
+### 🔥 Active Development Areas (Help Wanted!)
+
+We're currently building M1 (Prototype Indexer & API) and need help with:
+
+1. **SDEX Indexer Enhancement** 🚀
+   - Add retry logic with exponential backoff
+   - Implement real-time streaming (SSE from Horizon)
+   - Verify and implement orderbook snapshot endpoint
+   - Add comprehensive unit tests
+   - _Skills: Rust, API integration, Error handling_
+
+2. **Database Optimization** 💾
+   - Query performance tuning and indexes
+   - Add database health monitoring
+   - Implement data archival strategy
+   - Schema optimization based on query patterns
+   - _Skills: PostgreSQL, SQL, Performance tuning_
+
+3. **API Development** 🔌
+   - Implement REST API server (Axum)
+- Create `/api/v1/pairs` endpoint
+   - Add `/api/v1/orderbook/{base}/{quote}` endpoint
+   - Add `/api/v1/quote` endpoint
+   - WebSocket support for real-time updates
+   - _Skills: Rust (Axum), REST APIs, WebSocket_
+
+4. **Testing & Documentation** ✅
+   - Unit tests for indexer, models, and database layer
+   - Integration tests with test database
+   - API documentation (OpenAPI/Swagger)
+   - Code examples and tutorials
+   - _Skills: Testing, Technical writing_
+
+5. **Infrastructure & Monitoring** ⚡
+   - Add structured logging with tracing crate
+   - Implement health check endpoint
+   - Set up metrics collection
+   - Redis caching layer
+   - Rate limiting middleware
+   - _Skills: Observability, Redis, Performance_
+
+### 📋 Next Immediate Tasks
+
+1. Test indexer with local Postgres database
+2. Add retry logic for transient Horizon API failures
+3. Implement Horizon streaming (SSE) for real-time updates
+4. Research and verify orderbook snapshot endpoint
+5. Create REST API server with core endpoints
+6. Add comprehensive error handling and logging
+7. Write unit and integration tests
+
+**👉 Ready to contribute?** Check our [Issues](../../issues) page for tasks tagged by difficulty level (`good-first-issue`, `help-wanted`, `beginner-friendly`).
+
+---
+
+## 🚦 Getting Started
+
+### Prerequisites
+
+- Rust 1.75+ (installation instructions in [SETUP.md](docs/development/SETUP.md))
+- Soroban CLI
+- Docker & Docker Compose
+- PostgreSQL 15+
+- Node.js 18+ (for frontend development)
+
+### Quick Start
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/yourusername/OrynRoute.git
+   cd OrynRoute
+   ```
+
+2. **Install Rust and Soroban CLI**
+   Follow the detailed instructions in [docs/development/SETUP.md](docs/development/SETUP.md)
+
+3. **Start local services**
+
+   ```bash
+   # Deps only (Postgres + Redis):
+   docker-compose up -d
+
+   # Full stack (Postgres + Redis + API):
+   docker compose -f docker-compose.yml -f docker-compose.app.yml up -d
+
+   # Full stack with indexer (requires ROUTER_CONTRACT_ADDRESS in .env):
+   docker compose -f docker-compose.yml -f docker-compose.app.yml --profile indexer up -d
+   ```
+
+   Wait for services to be ready:
+   ```bash
+   ./scripts/wait-for-services.sh        # deps only
+   ./scripts/wait-for-services.sh --api  # deps + API
+   ```
+
+4. **Build the project**
+
+   ```bash
+   cargo build
+   ```
+
+5. **Run tests**
+   ```bash
+   cargo test
+   ```
+
+6. **Run routing benchmarks** (optional; also gated in CI on `crates/routing/` changes)
+   ```bash
+   # Criterion micro-benchmarks for pathfinding and optimizer tuning
+   cargo bench -p orynroute-routing
+
+   # CI latency gate (initialization + single lookup on graph fixture, <100ms)
+   cargo test -p orynroute-routing pathfinding_latency_gate --release -- --nocapture
+   ```
+
+For detailed setup instructions, see the [Development Setup Guide](docs/development/SETUP.md).
+
+Frontend contributors should also use the [Frontend Developer Onboarding Guide](docs/development/frontend-guide.md).
+
+---
+
+## 📦 Project Structure
+
+```
+OrynRoute/
+├── crates/
+│   ├── indexer/       # SDEX & Soroban indexing service
+│   ├── api/           # REST API server
+│   ├── routing/       # Routing engine & pathfinding
+│   ├── contracts/     # Soroban smart contracts
+│   └── sdk-rust/      # Rust SDK for developers
+├── frontend/          # Web UI (React/Next.js) [planned]
+├── sdk-js/            # JavaScript/TypeScript SDK
+├── docs/              # Documentation
+│   ├── architecture/  # Architecture documentation
+│   ├── api/          # API reference
+│   ├── development/  # Development guides
+│   └── deployment/   # Deployment guides
+├── scripts/          # Setup and utility scripts
+├── docker-compose.yml # Local development services
+├── Roadmap.md        # Detailed development roadmap
+└── README.md         # This file
+```
+
+---
+
+## 📈 Development Roadmap
+
+For the complete development roadmap with detailed milestones, phases, and technical tasks, see [Roadmap.md](Roadmap.md).
+
+---
+
+## 🤝 Contributing
+
+**We actively welcome contributions from developers of all skill levels!** OrynRoute is open-source and built for the Stellar ecosystem by the community.
+
+### Quick Start for Contributors
+
+1. **Browse Issues**: Check our [Issues](../../issues) page for tasks
+   - 🟢 `good-first-issue` - Perfect for newcomers
+   - 🟡 `help-wanted` - Ready for contribution
+   - 🔵 `beginner-friendly` - Minimal context needed
+
+2. **Join the Discussion**: Comment on an issue to claim it or ask questions
+
+3. **Fork & Code**: Fork the repo, create a feature branch, and start coding
+
+4. **Submit PR**: Open a pull request with clear description of changes
+
+5. **Review & Merge**: Collaborate with maintainers on code review
+
+### Ways to Contribute
+
+- 🐛 **Fix bugs** - Help us squash issues
+- ✨ **Add features** - Implement new functionality
+- 📝 **Improve docs** - Enhance guides and API documentation
+- 🧪 **Write tests** - Increase code coverage
+- ⚡ **Optimize performance** - Make it faster and more efficient
+- 🎨 **UI/UX improvements** - Enhance the frontend experience (M4)
+
+### Contribution Guidelines
+
+- Write clean, well-documented Rust code
+- Follow existing code style and patterns
+- Add tests for new functionality
+- Update documentation as needed
+- Keep PRs focused and atomic
+
+**New to Stellar or Rust?** No problem! We have mentorship available and beginner-friendly issues to help you get started.
+
+**Questions?** Open a discussion or comment on an issue - we're here to help!
+
+---
+
+## 🔐 Security & Audits
+
+Security is a launch gate for OrynRoute — the mainnet flag is not flipped until the external Soroban contract audit is complete and all Critical/High findings are remediated.
+
+- **Audit package**: [audit/](audit/) — architecture, scope, assumptions, threat model, and known issues handed to auditors
+- **External audit engagement & remediation tracking**: [audit/external-audit.md](audit/external-audit.md) — auditor selection, frozen audit commit/hash, findings status, and launch gate
+- **Published audit reports**: none yet — the final report link will be published here and in [audit/external-audit.md](audit/external-audit.md) when the engagement closes
+
+To report a vulnerability, please open a GitHub issue labelled `security` (or use GitHub private vulnerability reporting) rather than disclosing publicly.
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🔗 Resources
+
+- **Stellar Documentation**: https://developers.stellar.org
+- **Soroban Documentation**: https://soroban.stellar.org
+- **Horizon API Reference**: https://developers.stellar.org/api/horizon
+- **Project Roadmap**: [Roadmap.md](Roadmap.md)
+- **Development Setup**: [docs/development/SETUP.md](docs/development/SETUP.md)
+- **Frontend Onboarding**: [docs/development/frontend-guide.md](docs/development/frontend-guide.md)
+- **API Documentation**: [docs/api/](docs/api/)
+  - [WebSocket Quote Stream](docs/api/websocket.md)
+  - [REST API Routes](docs/api/routes_endpoint.md)
+  - [Error Taxonomy](docs/api/error_taxonomy.md)
+- **Wallet Integration Guide**: [docs/development/wallet-integration.md](docs/development/wallet-integration.md)
+- **TypeScript SDK Quickstart**: [sdk-js/README.md](sdk-js/README.md)
+- **TypeScript SDK API Docs**: [docs/sdk-js/api](docs/sdk-js/api)
+- **Rust SDK Guide**: [docs/sdk-rust/README.md](docs/sdk-rust/README.md)
+
+---
+
+## 📞 Support & Community
+
+- **Issues**: [GitHub Issues](../../issues)
+- **Discussions**: [GitHub Discussions](../../discussions)
+- **Documentation**: [docs/](docs/)
+
+---
+
+## 🎯 Vision
+
+Our goal is to make Stellar the hub for non-custodial cross-chain execution: the best place to swap on-ledger assets *and* move value to and from Ethereum, Solana, Bitcoin, and TRON through proven settlement rails. By combining SDEX orderbook depth with Soroban AMM liquidity and a chain-aware execution layer, we help traders get the best prices while giving developers a single integration surface for multi-chain flows.
+
+### Impact on the Stellar Ecosystem
+
+- **For Traders**: Best execution prices, transparent routing, and self-custody throughout
+- **For Developers**: Easy-to-integrate SDKs, v1 + v2 APIs, and multi-chain wallet adapters
+- **For DeFi Projects**: Foundation for cross-chain swaps, bridges, and advanced trading applications
+- **For the Ecosystem**: Critical infrastructure that positions Stellar as a cross-chain settlement layer
+
+---
+
+## 🏆 Recognition & Community
+
+This project is part of the **Stellar open-source ecosystem** and actively participates in community initiatives.
+
+- **Stellar Development Foundation** ecosystem project
+- **Open for Drips Wave** participation
+- **Community-driven** development with transparent progress tracking
+
+---
+
+## 💬 Get Involved
+
+- 💼 **Issues & Tasks**: [GitHub Issues](../../issues)
+- 💭 **Discussions**: [GitHub Discussions](../../discussions)
+- 📖 **Documentation**: [docs/](docs/)
+- 🗺️ **Roadmap**: [Roadmap.md](Roadmap.md)
+
+**We're actively building and need your help!** Whether you're a Rust expert or just starting your blockchain journey, there's a place for you in OrynRoute.
+
+**Built with ❤️ for the Stellar ecosystem**

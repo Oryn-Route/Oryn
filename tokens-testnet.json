@@ -1,0 +1,39 @@
+{
+  "network": "testnet",
+  "tokens": [
+    {
+      "asset": {
+        "type": "Native"
+      },
+      "name": "Stellar Lumens",
+      "code": "XLM",
+      "decimals": 7,
+      "issuer_verified": true,
+      "category": "Native"
+    },
+    {
+      "asset": {
+        "type": "Issued",
+        "issuer": "GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5",
+        "code": "USDC"
+      },
+      "name": "USD Coin (Testnet)",
+      "code": "USDC",
+      "decimals": 7,
+      "issuer_verified": true,
+      "category": "Stablecoin"
+    },
+    {
+      "asset": {
+        "type": "Issued",
+        "issuer": "GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5",
+        "code": "EURC"
+      },
+      "name": "Euro Coin (Testnet)",
+      "code": "EURC",
+      "decimals": 7,
+      "issuer_verified": true,
+      "category": "Stablecoin"
+    }
+  ]
+}

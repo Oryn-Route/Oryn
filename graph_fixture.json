@@ -1,0 +1,51 @@
+[
+  {
+    "from": "XLM",
+    "to": "USDC",
+    "venue_type": "amm",
+    "venue_ref": "pool1",
+    "liquidity": 10000000000
+  },
+  {
+    "from": "USDC",
+    "to": "EURT",
+    "venue_type": "sdex",
+    "venue_ref": "offer1",
+    "liquidity": 5000000000
+  },
+  {
+    "from": "EURT",
+    "to": "BTC",
+    "venue_type": "amm",
+    "venue_ref": "pool2",
+    "liquidity": 2000000000
+  },
+  {
+    "from": "XLM",
+    "to": "EURT",
+    "venue_type": "amm",
+    "venue_ref": "pool3",
+    "liquidity": 8000000000
+  },
+  {
+    "from": "USDC",
+    "to": "BTC",
+    "venue_type": "sdex",
+    "venue_ref": "offer2",
+    "liquidity": 1000000000
+  },
+  {
+    "from": "BTC",
+    "to": "ETH",
+    "venue_type": "amm",
+    "venue_ref": "pool4",
+    "liquidity": 500000000
+  },
+  {
+    "from": "XLM",
+    "to": "ETH",
+    "venue_type": "sdex",
+    "venue_ref": "offer3",
+    "liquidity": 1500000000
+  }
+]

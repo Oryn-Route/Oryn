@@ -1,0 +1,15 @@
+{
+  "description": "Testnet liquidity pool addresses to register with the OrynRoute router contract.",
+  "pools": [
+    {
+      "name": "XLM/USDC Testnet Pool",
+      "address": "CDVB6O3WX24AAZ77SQRN52ABU4ECB66N36FG5BFVPTV54DPG3V6MOTOD",
+      "notes": "Aquarius constant-product USDC/native pool on testnet. See docs/deployment/README.md for discovery steps."
+    },
+    {
+      "name": "XLM/BTC Testnet Pool",
+      "address": "CCZN4PG5BZ4NSAYX5EMY4SRVUIYTYYKA5DBA4WJIPSKWOS2NBL6ISQTE",
+      "notes": "Aquarius BTC/native concentrated pool on testnet. See docs/deployment/README.md for discovery steps."
+    }
+  ]
+}

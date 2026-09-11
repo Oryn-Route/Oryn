@@ -1,0 +1,99 @@
+{
+  "network": "mainnet",
+  "tokens": [
+    {
+      "asset": {
+        "type": "Native"
+      },
+      "name": "Stellar Lumens",
+      "code": "XLM",
+      "decimals": 7,
+      "issuer_verified": true,
+      "category": "Native"
+    },
+    {
+      "asset": {
+        "type": "Issued",
+        "issuer": "GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN",
+        "code": "USDC"
+      },
+      "name": "USD Coin",
+      "code": "USDC",
+      "decimals": 7,
+      "issuer_verified": true,
+      "category": "Stablecoin"
+    },
+    {
+      "asset": {
+        "type": "Issued",
+        "issuer": "GAGZBL4KNTR2VBPNFKSCMJCUD5SPNK3QTZLVZJZ6DQYB9AFSZBSCQKD",
+        "code": "EURC"
+      },
+      "name": "Euro Coin",
+      "code": "EURC",
+      "decimals": 7,
+      "issuer_verified": true,
+      "category": "Stablecoin"
+    },
+    {
+      "asset": {
+        "type": "Issued",
+        "issuer": "GCVVODZH2BJ3QIKJMQQ7DKIZGXZTIGZBIJVM6I4WRLX4JRXJ5EWXR4P",
+        "code": "yXLM"
+      },
+      "name": "Yieldblox XLM",
+      "code": "yXLM",
+      "decimals": 7,
+      "issuer_verified": true,
+      "category": "Ecosystem"
+    },
+    {
+      "asset": {
+        "type": "Issued",
+        "issuer": "GBNZILSTVQZ4R7IKQDGHYGY2QXL5QOFJYQMXPKWRRM5PAV7Y4M67AQUA",
+        "code": "AQUA"
+      },
+      "name": "Aquarius",
+      "code": "AQUA",
+      "decimals": 7,
+      "issuer_verified": true,
+      "category": "Ecosystem"
+    },
+    {
+      "asset": {
+        "type": "Issued",
+        "issuer": "GCKA6K5PCQ6PNF5RQBF7PQDJWRHO6UOGFMRLK3DYHDOI244V47XKQ4W",
+        "code": "SHX"
+      },
+      "name": "Stronghold Token",
+      "code": "SHX",
+      "decimals": 7,
+      "issuer_verified": true,
+      "category": "Ecosystem"
+    },
+    {
+      "asset": {
+        "type": "Issued",
+        "issuer": "GD5J6HLF5666X4AZLTFTXLY46J5SWRHESGQU3XTCQGROX4DGVM3BPFP",
+        "code": "RMT"
+      },
+      "name": "SureRemit",
+      "code": "RMT",
+      "decimals": 7,
+      "issuer_verified": true,
+      "category": "Ecosystem"
+    },
+    {
+      "asset": {
+        "type": "Issued",
+        "issuer": "GA6HCMBLTZS5VYYBCATRBRZ3BZJMAFUDKYYF6AH6MVCMGWMRDNSWJPIH",
+        "code": "MOBI"
+      },
+      "name": "Mobius",
+      "code": "MOBI",
+      "decimals": 7,
+      "issuer_verified": true,
+      "category": "Ecosystem"
+    }
+  ]
+}
